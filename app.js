@@ -181,7 +181,7 @@
 
     const nameField = el('div', { class: 'field' });
     nameField.appendChild(fieldLabel('Full name', 'الاسم الكامل', true));
-    const nameInput = el('input', { type: 'text', placeholder: 'e.g. Sara Al-Mansoori' });
+    const nameInput = el('input', { type: 'text', placeholder: 'e.g. Sara Al-Mansoori', 'data-field': 'fullName' });
     nameInput.value = state.data.fullName;
     nameInput.addEventListener('input', (e) => set('fullName', e.target.value));
     nameField.appendChild(nameInput);
@@ -189,7 +189,7 @@
 
     const teamField = el('div', { class: 'field' });
     teamField.appendChild(fieldLabel('Team', 'الفريق', true));
-    const teamSelect = el('select');
+    const teamSelect = el('select', { 'data-field': 'team' });
     teamSelect.appendChild(el('option', { value: '' }, ['Select team / اختر الفريق']));
     TEAMS.forEach((t) => teamSelect.appendChild(el('option', { value: t.key }, [t.key + ' / ' + t.ar])));
     teamSelect.value = state.data.team;
@@ -199,7 +199,7 @@
 
     const contactField = el('div', { class: 'field' });
     contactField.appendChild(fieldLabel('Contact (WhatsApp or email)', 'جهة التواصل', true));
-    const contactInput = el('input', { type: 'text', placeholder: '+971 5X XXX XXXX or name@email.com' });
+    const contactInput = el('input', { type: 'text', placeholder: '+971 5X XXX XXXX or name@email.com', 'data-field': 'contact' });
     contactInput.value = state.data.contact;
     contactInput.addEventListener('input', (e) => set('contact', e.target.value));
     contactField.appendChild(contactInput);
@@ -216,7 +216,7 @@
 
     const titleField = el('div', { class: 'field' });
     titleField.appendChild(fieldLabel('Request title', 'عنوان الطلب', true));
-    const titleInput = el('input', { type: 'text', placeholder: 'e.g. Ramadan Iftar Event Poster' });
+    const titleInput = el('input', { type: 'text', placeholder: 'e.g. Ramadan Iftar Event Poster', 'data-field': 'title' });
     titleInput.value = state.data.title;
     titleInput.addEventListener('input', (e) => set('title', e.target.value));
     titleField.appendChild(titleInput);
@@ -234,7 +234,7 @@
     });
     typeField.appendChild(chipRow);
     if (state.data.designTypes.includes('Other')) {
-      const otherInput = el('input', { type: 'text', placeholder: 'Please specify the design type... / يرجى تحديد نوع التصميم', style: { marginTop: '12px' } });
+      const otherInput = el('input', { type: 'text', placeholder: 'Please specify the design type... / يرجى تحديد نوع التصميم', style: { marginTop: '12px' }, 'data-field': 'otherDesignType' });
       otherInput.value = state.data.otherDesignType;
       otherInput.addEventListener('input', (e) => set('otherDesignType', e.target.value));
       typeField.appendChild(otherInput);
@@ -260,7 +260,7 @@
     const briefField = el('div', { class: 'field' });
     briefField.appendChild(fieldLabel('Brief', 'الوصف', false));
     briefField.appendChild(el('div', { class: 'hint' }, ['What is the design for? What message should it convey?']));
-    const briefTextarea = el('textarea', { rows: 4, placeholder: 'Describe the purpose and key message...' });
+    const briefTextarea = el('textarea', { rows: 4, placeholder: 'Describe the purpose and key message...', 'data-field': 'brief' });
     briefTextarea.value = state.data.brief;
     briefTextarea.addEventListener('input', (e) => set('brief', e.target.value));
     briefField.appendChild(briefTextarea);
@@ -291,13 +291,13 @@
 
     const sizeField = el('div', { class: 'field' });
     sizeField.appendChild(fieldLabel('Size', 'المقاس', true));
-    const sizeSelect = el('select');
+    const sizeSelect = el('select', { 'data-field': 'size' });
     SIZES.forEach(([val, label]) => sizeSelect.appendChild(el('option', { value: val }, [label])));
     sizeSelect.value = state.data.size;
     sizeSelect.addEventListener('change', (e) => set('size', e.target.value));
     sizeField.appendChild(sizeSelect);
     if (state.data.size === 'Custom') {
-      const customInput = el('input', { type: 'text', placeholder: 'e.g. 1200 x 628 px', style: { marginTop: '10px' } });
+      const customInput = el('input', { type: 'text', placeholder: 'e.g. 1200 x 628 px', style: { marginTop: '10px' }, 'data-field': 'customSize' });
       customInput.value = state.data.customSize;
       customInput.addEventListener('input', (e) => set('customSize', e.target.value));
       sizeField.appendChild(customInput);
@@ -325,7 +325,7 @@
 
     const draft = el('div', { class: 'field' });
     draft.appendChild(fieldLabel('First draft needed by', 'موعد المسودة الأولى', false));
-    const draftInput = el('input', { type: 'date' });
+    const draftInput = el('input', { type: 'date', 'data-field': 'draftDate' });
     draftInput.value = state.data.draftDate;
     draftInput.addEventListener('change', (e) => set('draftDate', e.target.value));
     draft.appendChild(draftInput);
@@ -333,7 +333,7 @@
 
     const finalField = el('div', { class: 'field' });
     finalField.appendChild(fieldLabel('Final file needed by', 'موعد الملف النهائي', true));
-    const finalInput = el('input', { type: 'date' });
+    const finalInput = el('input', { type: 'date', 'data-field': 'finalDate' });
     finalInput.value = state.data.finalDate;
     finalInput.addEventListener('change', (e) => set('finalDate', e.target.value));
     finalField.appendChild(finalInput);
@@ -341,7 +341,7 @@
 
     const publish = el('div', { class: 'field' });
     publish.appendChild(fieldLabel('Publish / event date', 'تاريخ النشر أو الفعالية', false));
-    const publishInput = el('input', { type: 'date' });
+    const publishInput = el('input', { type: 'date', 'data-field': 'publishDate' });
     publishInput.value = state.data.publishDate;
     publishInput.addEventListener('change', (e) => set('publishDate', e.target.value));
     publish.appendChild(publishInput);
@@ -359,7 +359,7 @@
     const copyField = el('div', { class: 'field' });
     copyField.appendChild(fieldLabel('Text / copy', 'النص المطلوب', true));
     copyField.appendChild(el('div', { class: 'hint' }, ['Paste exact titles, dates, taglines to include']));
-    const copyTextarea = el('textarea', { rows: 4, placeholder: 'Paste exact copy here...' });
+    const copyTextarea = el('textarea', { rows: 4, placeholder: 'Paste exact copy here...', 'data-field': 'copyText' });
     copyTextarea.value = state.data.copyText;
     copyTextarea.addEventListener('input', (e) => set('copyText', e.target.value));
     copyField.appendChild(copyTextarea);
@@ -399,7 +399,7 @@
 
     const linksField = el('div', { class: 'field' });
     linksField.appendChild(fieldLabel('Reference links', 'روابط مرجعية', false));
-    const linksInput = el('input', { type: 'url', placeholder: 'Google Drive, Canva, or inspiration link' });
+    const linksInput = el('input', { type: 'url', placeholder: 'Google Drive, Canva, or inspiration link', 'data-field': 'links' });
     linksInput.value = state.data.links;
     linksInput.addEventListener('input', (e) => set('links', e.target.value));
     linksField.appendChild(linksInput);
@@ -407,7 +407,7 @@
 
     const colorField = el('div', { class: 'field' });
     colorField.appendChild(fieldLabel('Colour / style notes', 'ملاحظات على الألوان والأسلوب', false));
-    const colorInput = el('input', { type: 'text', placeholder: 'e.g. Use brand navy, keep it minimal' });
+    const colorInput = el('input', { type: 'text', placeholder: 'e.g. Use brand navy, keep it minimal', 'data-field': 'colorNotes' });
     colorInput.value = state.data.colorNotes;
     colorInput.addEventListener('input', (e) => set('colorNotes', e.target.value));
     colorField.appendChild(colorInput);
@@ -415,7 +415,7 @@
 
     const avoidField = el('div', { class: 'field' });
     avoidField.appendChild(fieldLabel('Things to avoid', 'ما يجب تجنّبه', false));
-    const avoidInput = el('input', { type: 'text', placeholder: 'e.g. No stock photos, avoid red' });
+    const avoidInput = el('input', { type: 'text', placeholder: 'e.g. No stock photos, avoid red', 'data-field': 'avoid' });
     avoidInput.value = state.data.avoid;
     avoidInput.addEventListener('input', (e) => set('avoid', e.target.value));
     avoidField.appendChild(avoidInput);
@@ -587,8 +587,28 @@
   }
 
   function render() {
+    const active = document.activeElement;
+    let focusInfo = null;
+    if (active && root.contains(active) && active.dataset && active.dataset.field) {
+      focusInfo = {
+        field: active.dataset.field,
+        start: typeof active.selectionStart === 'number' ? active.selectionStart : null,
+        end: typeof active.selectionEnd === 'number' ? active.selectionEnd : null,
+      };
+    }
+
     root.innerHTML = '';
     root.appendChild(state.submitted ? renderSuccess() : renderForm());
+
+    if (focusInfo) {
+      const toFocus = root.querySelector('[data-field="' + focusInfo.field + '"]');
+      if (toFocus) {
+        toFocus.focus();
+        if (focusInfo.start !== null && typeof toFocus.setSelectionRange === 'function') {
+          try { toFocus.setSelectionRange(focusInfo.start, focusInfo.end); } catch (e) { /* not a text-selectable input */ }
+        }
+      }
+    }
   }
 
   render();
