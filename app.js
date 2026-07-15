@@ -21,7 +21,6 @@
     { key: 'Banner', ar: 'بانر' },
     { key: 'Presentation', ar: 'عرض تقديمي' },
     { key: 'Certificate', ar: 'شهادة' },
-    { key: 'Logo', ar: 'شعار' },
     { key: 'Other', ar: 'أخرى' },
   ];
 
@@ -61,6 +60,15 @@
     '<svg width="30" height="30" viewBox="0 0 24 24" fill="none"><path d="M4 12.5l5 5L20 7" stroke="#6d3fb0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   const UPLOAD_ICON_SVG =
     '<svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 4v11m0-11l-4 4m4-4l4 4M5 17v2a2 2 0 002 2h10a2 2 0 002-2v-2" stroke="#6d3fb0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const SMALL_CHECK_ICON_SVG =
+    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 12.5l5 5L20 7" stroke="#1a7f4b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  function formatFileSize(bytes) {
+    if (!bytes && bytes !== 0) return '';
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  }
 
   function emptyData() {
     return {
@@ -133,10 +141,16 @@
     render();
   }
 
-  function handleFiles(e) {
-    const files = Array.from(e.target.files || []);
-    if (files.length) state.data.files = state.data.files.concat(files);
+  function addFiles(newFiles) {
+    const existingKeys = new Set(state.data.files.map((f) => f.name + '::' + f.size));
+    const toAdd = newFiles.filter((f) => !existingKeys.has(f.name + '::' + f.size));
+    if (toAdd.length) state.data.files = state.data.files.concat(toAdd);
     render();
+  }
+
+  function handleFiles(e) {
+    addFiles(Array.from(e.target.files || []));
+    e.target.value = ''; // allow re-selecting the same file later if it's removed
   }
 
   function removeFile(idx) {
@@ -380,16 +394,21 @@
     dropzone.addEventListener('drop', (e) => {
       e.preventDefault();
       dropzone.classList.remove('dragover');
-      const dropped = Array.from((e.dataTransfer && e.dataTransfer.files) || []);
-      if (dropped.length) { state.data.files = state.data.files.concat(dropped); render(); }
+      addFiles(Array.from((e.dataTransfer && e.dataTransfer.files) || []));
     });
     filesField.appendChild(dropzone);
 
     if (state.data.files.length) {
+      const confirmBanner = el('div', { class: 'upload-confirm' });
+      confirmBanner.appendChild(svgFromString(SMALL_CHECK_ICON_SVG));
+      const count = state.data.files.length;
+      confirmBanner.appendChild(document.createTextNode(count + (count === 1 ? ' file attached' : ' files attached')));
+      filesField.appendChild(confirmBanner);
+
       const list = el('div', { class: 'file-list' });
       state.data.files.forEach((f, idx) => {
         const row = el('div', { class: 'file-row' });
-        row.appendChild(el('span', null, [f.name]));
+        row.appendChild(el('span', null, [f.name + ' (' + formatFileSize(f.size) + ')']));
         row.appendChild(el('button', { type: 'button', onClick: () => removeFile(idx) }, ['×']));
         list.appendChild(row);
       });
