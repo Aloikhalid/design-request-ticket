@@ -135,6 +135,24 @@
     render();
   }
 
+  // For plain typed text fields: update state and just the nav button,
+  // without touching the input's own DOM node. Rebuilding the whole form
+  // on every keystroke (via render()) forces mobile browsers to treat the
+  // field as brand new, which can reset the on-screen keyboard mid-typing.
+  function setLive(key, val) {
+    state.data[key] = val;
+    updateNavButton();
+  }
+
+  function updateNavButton() {
+    if (state.submitted || state.step >= 4) return;
+    const btn = root.querySelector('.nav .next');
+    if (!btn) return;
+    const can = canProceed(state.step, state.data);
+    btn.disabled = !can;
+    btn.style.opacity = can ? '1' : '0.55';
+  }
+
   function toggle(key, val) {
     const arr = state.data[key];
     state.data[key] = arr.includes(val) ? arr.filter((v) => v !== val) : arr.concat([val]);
@@ -197,7 +215,7 @@
     nameField.appendChild(fieldLabel('Full name', 'الاسم الكامل', true));
     const nameInput = el('input', { type: 'text', placeholder: 'e.g. Sara Al-Mansoori', 'data-field': 'fullName' });
     nameInput.value = state.data.fullName;
-    nameInput.addEventListener('input', (e) => set('fullName', e.target.value));
+    nameInput.addEventListener('input', (e) => setLive('fullName', e.target.value));
     nameField.appendChild(nameInput);
     group.appendChild(nameField);
 
@@ -213,9 +231,9 @@
 
     const contactField = el('div', { class: 'field' });
     contactField.appendChild(fieldLabel('Contact (WhatsApp or email)', 'جهة التواصل', true));
-    const contactInput = el('input', { type: 'text', placeholder: '+971 5X XXX XXXX or name@email.com', 'data-field': 'contact' });
+    const contactInput = el('input', { type: 'text', placeholder: '+966 5X XXX XXXX or name@email.com', 'data-field': 'contact' });
     contactInput.value = state.data.contact;
-    contactInput.addEventListener('input', (e) => set('contact', e.target.value));
+    contactInput.addEventListener('input', (e) => setLive('contact', e.target.value));
     contactField.appendChild(contactInput);
     group.appendChild(contactField);
 
@@ -232,7 +250,7 @@
     titleField.appendChild(fieldLabel('Request title', 'عنوان الطلب', true));
     const titleInput = el('input', { type: 'text', placeholder: 'e.g. Ramadan Iftar Event Poster', 'data-field': 'title' });
     titleInput.value = state.data.title;
-    titleInput.addEventListener('input', (e) => set('title', e.target.value));
+    titleInput.addEventListener('input', (e) => setLive('title', e.target.value));
     titleField.appendChild(titleInput);
     group.appendChild(titleField);
 
@@ -250,7 +268,7 @@
     if (state.data.designTypes.includes('Other')) {
       const otherInput = el('input', { type: 'text', placeholder: 'Please specify the design type... / يرجى تحديد نوع التصميم', style: { marginTop: '12px' }, 'data-field': 'otherDesignType' });
       otherInput.value = state.data.otherDesignType;
-      otherInput.addEventListener('input', (e) => set('otherDesignType', e.target.value));
+      otherInput.addEventListener('input', (e) => setLive('otherDesignType', e.target.value));
       typeField.appendChild(otherInput);
     }
     group.appendChild(typeField);
@@ -276,7 +294,7 @@
     briefField.appendChild(el('div', { class: 'hint' }, ['What is the design for? What message should it convey?']));
     const briefTextarea = el('textarea', { rows: 4, placeholder: 'Describe the purpose and key message...', 'data-field': 'brief' });
     briefTextarea.value = state.data.brief;
-    briefTextarea.addEventListener('input', (e) => set('brief', e.target.value));
+    briefTextarea.addEventListener('input', (e) => setLive('brief', e.target.value));
     briefField.appendChild(briefTextarea);
     group.appendChild(briefField);
 
@@ -313,7 +331,7 @@
     if (state.data.size === 'Custom') {
       const customInput = el('input', { type: 'text', placeholder: 'e.g. 1200 x 628 px', style: { marginTop: '10px' }, 'data-field': 'customSize' });
       customInput.value = state.data.customSize;
-      customInput.addEventListener('input', (e) => set('customSize', e.target.value));
+      customInput.addEventListener('input', (e) => setLive('customSize', e.target.value));
       sizeField.appendChild(customInput);
     }
     group.appendChild(sizeField);
@@ -375,7 +393,7 @@
     copyField.appendChild(el('div', { class: 'hint' }, ['Paste exact titles, dates, taglines to include']));
     const copyTextarea = el('textarea', { rows: 4, placeholder: 'Paste exact copy here...', 'data-field': 'copyText' });
     copyTextarea.value = state.data.copyText;
-    copyTextarea.addEventListener('input', (e) => set('copyText', e.target.value));
+    copyTextarea.addEventListener('input', (e) => setLive('copyText', e.target.value));
     copyField.appendChild(copyTextarea);
     group.appendChild(copyField);
 
@@ -420,7 +438,7 @@
     linksField.appendChild(fieldLabel('Reference links', 'روابط مرجعية', false));
     const linksInput = el('input', { type: 'url', placeholder: 'Google Drive, Canva, or inspiration link', 'data-field': 'links' });
     linksInput.value = state.data.links;
-    linksInput.addEventListener('input', (e) => set('links', e.target.value));
+    linksInput.addEventListener('input', (e) => setLive('links', e.target.value));
     linksField.appendChild(linksInput);
     group.appendChild(linksField);
 
@@ -428,7 +446,7 @@
     colorField.appendChild(fieldLabel('Colour / style notes', 'ملاحظات على الألوان والأسلوب', false));
     const colorInput = el('input', { type: 'text', placeholder: 'e.g. Use brand navy, keep it minimal', 'data-field': 'colorNotes' });
     colorInput.value = state.data.colorNotes;
-    colorInput.addEventListener('input', (e) => set('colorNotes', e.target.value));
+    colorInput.addEventListener('input', (e) => setLive('colorNotes', e.target.value));
     colorField.appendChild(colorInput);
     group.appendChild(colorField);
 
@@ -436,7 +454,7 @@
     avoidField.appendChild(fieldLabel('Things to avoid', 'ما يجب تجنّبه', false));
     const avoidInput = el('input', { type: 'text', placeholder: 'e.g. No stock photos, avoid red', 'data-field': 'avoid' });
     avoidInput.value = state.data.avoid;
-    avoidInput.addEventListener('input', (e) => set('avoid', e.target.value));
+    avoidInput.addEventListener('input', (e) => setLive('avoid', e.target.value));
     avoidField.appendChild(avoidInput);
     group.appendChild(avoidField);
 
@@ -454,7 +472,9 @@
     }
     if (state.step < 4) {
       const can = canProceed(state.step, state.data);
-      const next = el('button', { class: 'next', type: 'button', disabled: !can, onClick: () => { if (can) { state.step += 1; render(); } } });
+      // Re-check canProceed at click time, not the `can` captured here — updateNavButton()
+      // can flip the button's visual enabled state later without re-running this closure.
+      const next = el('button', { class: 'next', type: 'button', disabled: !can, onClick: () => { if (canProceed(state.step, state.data)) { state.step += 1; render(); } } });
       next.style.opacity = can ? '1' : '0.55';
       next.appendChild(document.createTextNode('Next '));
       next.appendChild(el('span', { dir: 'rtl' }, ['/ التالي']));
